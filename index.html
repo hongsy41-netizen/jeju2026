@@ -260,13 +260,10 @@
   }
   .leaflet-popup-content strong { color: #1a237e; }
 
-  @media (max-width: 600px) {
-    .header h1 { font-size: 24px; }
-    .day-header .date-badge { min-width: 40px; }
-    .event-time { min-width: 58px; font-size: 12px; }
-  }
-</style>
-</head>
+  .family-summary{background:#fff;padding:18px 22px;border-bottom:1px solid #e8edf2}
+  .family-summary h3{font-size:15px;font-weight:700;color:#0f1b4d;margin-bottom:10px}
+  .family-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+  .family-card{border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.6
 <body>
 <div class="container">
 
@@ -274,6 +271,33 @@
     <h1>2026 제주도 가족여행</h1>
     <div class="sub">서율이네 &amp; 엄마아빠 &amp; 현아네 — 함께하는 여름</div>
     <div class="dates">2026. 8. 10 (월) ~ 8. 16 (일) · 6박 7일</div>
+  </div>
+
+  <div class="family-summary">
+    <h3>🌄 가족별 제주 도착 · 출발 일정</h3>
+    <div class="family-grid">
+      <div class="family-card" style="background:#e3f2fd">
+        <div style="font-weight:700;font-size:13px;margin-bottom:3px">🚢 서율이네</div>
+        <div style="color:#2e7d32">✅ 도착: 8/10(월) 15:00 · 산타모니카호 진도→제주 (3명+Model Y)</div>
+        <div style="color:#c62828">🛫 출발: 8/16(일) 11:00 · 산타모니카호 제주→진도</div>
+        <div style="font-size:11px;color:#555;margin-top:2px">🏨 8/10 아스타호텔 → 8/11~12 신화월드 → 8/13~15 한화리조트</div>
+      </div>
+      <div class="family-card" style="background:#fce4ec">
+        <div style="font-weight:700;font-size:13px;margin-bottom:3px">✈️ 엄마아빠</div>
+        <div style="color:#2e7d32">✅ 도착: 8/13(목) 15:15 · TW723 김포→제주 (Q49PP3)</div>
+        <div style="color:#c62828">🛫 출발: 8/16(일) 15:10 · OZ8950 제주→김포 (E6ZKAO)</div>
+      </div>
+      <div class="family-card" style="background:#e8f5e9">
+        <div style="font-weight:700;font-size:13px;margin-bottom:3px">✈️ 현아+우빈</div>
+        <div style="color:#2e7d32">✅ 도착: 8/14(금) 14:10</div>
+        <div style="color:#c62828">🛫 출발: 8/18(화) 17:20</div>
+      </div>
+      <div class="family-card" style="background:#e8f5e9">
+        <div style="font-weight:700;font-size:13px;margin-bottom:3px">✈️ 훈이</div>
+        <div style="color:#2e7d32">✅ 도착: 8/15(토) 07:55 · 공항 렌트카 픽업 🚗</div>
+        <div style="color:#c62828">🛫 출발: 8/18(화) 07:40</div>
+      </div>
+    </div>
   </div>
 
   <div class="legend">
@@ -300,8 +324,7 @@
         <div class="event-desc">
           <strong>서율이네</strong> 배 타고 제주도 도착 🚢<br>
           <span style="font-size:13px;color:#888">
-            🚢 산타모니카호 · 진도→제주 · 13:30 출항 → 15:00 도착 (3명 + 차량 1대)
-          </span>
+            🚢 산타모니카호 · 진도→제주 · 13:30 출항 → 15:00 도착 (서율이네 3명 + 테슬라 Model Y)
         </div>
       </div>
       <div class="event">
@@ -393,12 +416,10 @@
         <div class="event-desc">
           <div class="dinner-rec">
             <div class="label">🍽 저녁 추천</div>
-            <strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%B9%A0%EB%8F%88%EA%B0%80%20%EC%A0%9C%EC%A3%BC" target="_blank">칠돈가</a></strong>
-            — 제주 흑돼지 (직원이 구워주는 현지인 맛집)<br>
+            <strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%9A%A9%EB%A8%B8%EB%A6%AC%ED%95%B4%EC%95%88%20%EC%A0%9C%EC%A3%BC%20%EB%A7%9B%EC%A7%91" target="_blank">용머리해안 근처 맛집</a></strong>
+            — 신화월드에서 10분, 동선 최적<br>
             <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%9D%BC%EC%A3%BC%EC%84%9C%EB%A1%9C%207779" target="_blank">제주시 일주서로 7779</a>
-               · 📞 <a href="tel:0647279092">064-727-9092</a>
-               · ⏰ 12:00-22:00 (수 휴무 · 브레이크 14:50-17:00)
+              📍 서귀포시 안덕면 일대
             </span>
           </div>
         </div>
@@ -547,7 +568,7 @@
         <div class="event-time">오전/오후</div>
         <div class="event-desc">
           <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">훈이</span>
-          <strong>훈이</strong> 제주 도착 ✈<br>
+          <strong>훈이</strong> 제주 도착 ✈ · 공항에서 <strong>렌트카 픽업</strong> 🚗<br>
           <span style="font-size:13px;color:#888">🛫 06:40 → 🛬 제주 07:55</span>
         </div>
       </div>
@@ -674,7 +695,7 @@
           <span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span>
           <strong>서율이네</strong> 배 타고 출발 🚢<br>
           <span style="font-size:13px;color:#888">
-            🚢 산타모니카호 · 제주→진도 · 11:00 출항 → 12:30 도착
+            🚢 산타모니카호 · 제주→진도 · 11:00 출항 → 12:30 도착 (서율이네 3명 + 테슬라 Model Y) · 11:00 출항 → 12:30 도착
           </span>
         </div>
       </div>
