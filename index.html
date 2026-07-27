@@ -2,819 +2,308 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>2026 제주도 가족여행</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: linear-gradient(135deg, #e0f7fa 0%, #fff3e0 50%, #e8f5e9 100%);
-    min-height: 100vh;
-    padding: 30px 20px;
-  }
-  .container { max-width: 900px; margin: 0 auto; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#f0f4f8;color:#222;min-height:100vh}
 
-  .header {
-    text-align: center;
-    padding: 40px 20px 30px;
-    background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
-    border-radius: 20px 20px 0 0;
-    color: white;
-    position: relative;
-    overflow: hidden;
-  }
-  .header::before {
-    content: '✈';
-    position: absolute;
-    font-size: 120px;
-    right: -10px;
-    bottom: -20px;
-    opacity: 0.1;
-  }
-  .header h1 { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
-  .header .sub { font-size: 15px; opacity: 0.85; margin-top: 8px; font-weight: 300; }
-  .header .dates {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    padding: 6px 20px;
-    border-radius: 20px;
-    margin-top: 12px;
-    font-size: 14px;
-    font-weight: 500;
-  }
+.hero{position:relative;height:360px;overflow:hidden;background:linear-gradient(135deg,#0f1b4d,#1a3a6b)}
+.hero-bg{position:absolute;inset:0;background:url(https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1200&q=80) center/cover;opacity:.45}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,27,77,.85) 0%,transparent 50%,rgba(15,27,77,.3) 100%)}
+.hero-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 24px;text-align:center;color:#fff}
+.hero h1{font-size:34px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 12px rgba(0,0,0,.3);margin-bottom:6px}
+.hero .sub{font-size:15px;opacity:.85;font-weight:300;margin-bottom:10px;text-shadow:0 1px 6px rgba(0,0,0,.2)}
+.hero .dates{display:inline-block;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);padding:6px 20px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid rgba(255,255,255,.1)}
+.hero-badge{display:inline-flex;gap:6px;margin-bottom:12px}
+.hero-badge span{background:rgba(255,255,255,.12);backdrop-filter:blur(6px);padding:4px 12px;border-radius:12px;font-size:11px;font-weight:500;border:1px solid rgba(255,255,255,.08)}
 
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 20px;
-    padding: 16px 24px;
-    background: white;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 13px;
-  }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .legend-dot {
-    width: 12px; height: 12px; border-radius: 50%; display: inline-block;
-  }
+.container{max-width:860px;margin:-40px auto 0;position:relative;z-index:3;padding:0 12px}
 
-  .day-card {
-    background: white;
-    border-left: 5px solid #90caf9;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: transform 0.15s;
-  }
-  .day-card:hover { transform: translateX(4px); }
+.summary-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-bottom:16px}
+.summary-card h3{font-size:15px;font-weight:700;color:#0f1b4d;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.family-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.family-card{border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.55}
+.family-card .fc-name{font-weight:700;font-size:13px;margin-bottom:3px}
+.family-card .fc-in{color:#2e7d32}
+.family-card .fc-out{color:#c62828}
 
-  .day-header {
-    display: flex;
-    align-items: center;
-    padding: 14px 20px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .day-header .date-badge {
-    min-width: 48px;
-    text-align: center;
-    margin-right: 16px;
-  }
-  .day-header .date-badge .day-num {
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.2;
-  }
-  .day-header .date-badge .day-name {
-    font-size: 11px;
-    color: #888;
-    font-weight: 500;
-  }
-  .day-header .date-badge .day-week {
-    font-size: 11px;
-    font-weight: 700;
-    color: #1976d2;
-  }
-  .day-header .day-summary {
-    flex: 1;
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-  }
-  .day-header .toggle-icon {
-    color: #bbb;
-    font-size: 18px;
-    transition: transform 0.2s;
-  }
-  .day-card.collapsed .day-body { display: none; }
-  .day-card.collapsed .toggle-icon { transform: rotate(-90deg); }
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:12px 16px;background:#fff;border-radius:12px;font-size:12px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.legend-item{display:flex;align-items:center;gap:5px}
+.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
 
-  .day-body { padding: 0 20px 16px; }
+.day-card{background:#fff;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);transition:all .25s}
+.day-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.day-header{display:flex;align-items:center;padding:14px 16px;cursor:pointer;user-select:none;gap:12px}
+.day-header .date-badge{min-width:44px;text-align:center}
+.day-header .date-badge .day-num{font-size:22px;font-weight:900;line-height:1.1;color:#0f1b4d}
+.day-header .date-badge .day-name{font-size:10px;color:#999;font-weight:500}
+.day-header .date-badge .day-week{font-size:10px;font-weight:700;color:#1976d2}
+.day-header .day-summary{flex:1;font-size:13px;font-weight:500;color:#555}
+.day-header .toggle-icon{color:#ccc;font-size:14px;transition:transform .25s;width:20px;text-align:center}
+.day-card.collapsed .day-body{display:none}
+.day-card.collapsed .toggle-icon{transform:rotate(-90deg)}
+.day-body{padding:0 16px 16px}
 
-  .event {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 8px 0;
-    border-bottom: 1px dashed #f0f0f0;
-  }
-  .event:last-child { border-bottom: none; }
-  .event-time {
-    min-width: 70px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-    padding-top: 2px;
-  }
-  .event-desc {
-    flex: 1;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #444;
-  }
-  .event-desc strong { color: #1a237e; }
-  .event-desc .tag {
-    display: inline-block;
-    font-size: 11px;
-    padding: 1px 8px;
-    border-radius: 10px;
-    margin-right: 4px;
-    font-weight: 500;
-  }
+.event{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f3f7}
+.event:last-child{border-bottom:none}
+.event-time{min-width:58px;font-size:12px;font-weight:500;color:#999;padding-top:2px;flex-shrink:0}
+.event-desc{flex:1;font-size:13px;line-height:1.55;color:#444}
+.event-desc strong{color:#0f1b4d}
+.event-desc .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:8px;margin-right:3px;font-weight:600}
+.people-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:8px;margin-right:2px;font-weight:600}
 
-  .people-tag {
-    display: inline-block;
-    font-size: 11px;
-    padding: 1px 8px;
-    border-radius: 10px;
-    margin-right: 3px;
-    font-weight: 500;
-  }
+.special .date-badge .day-week{color:#e64a19!important}
+.special .date-badge .day-num{color:#e64a19!important}
 
-  .special { border-left-color: #ff8a65; }
-  .special .day-header .date-badge .day-week { color: #e64a19; }
+.route-box{background:#f7f9fc;border-radius:10px;padding:8px 12px;margin:6px 0;border:1px solid #e8edf4}
+.route-step{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px dashed #e8edf4;font-size:12px;line-height:1.5}
+.route-step:last-child{border-bottom:none}
+.route-time{min-width:44px;font-weight:500;color:#aaa;font-size:11px;padding-top:1px;flex-shrink:0}
 
-  .route-box {
-    background: #fafafa;
-    border-radius: 10px;
-    padding: 10px 14px;
-    margin: 6px 0 4px;
-    border: 1px solid #eee;
-  }
-  .route-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 5px 0;
-    border-bottom: 1px dashed #e8e8e8;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-  .route-step:last-child { border-bottom: none; }
-  .route-time {
-    min-width: 52px;
-    font-weight: 500;
-    color: #888;
-    font-size: 12px;
-    padding-top: 1px;
-  }
+.highlight-event{background:linear-gradient(135deg,#fff8e1,#fff3e0);border-radius:10px;padding:10px 14px;margin:6px 0;border-left:3px solid #ff9800}
 
-  .highlight-event {
-    background: linear-gradient(135deg, #fff8e1, #fff3e0);
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin: 6px 0;
-    border-left: 3px solid #ff9800;
-  }
+.rest-link{display:inline-flex;align-items:center;gap:3px;color:#d84315;text-decoration:none;font-weight:600;border-bottom:1px dotted #d84315}
+.rest-link:hover{color:#bf360c;border-bottom-style:solid}
+.rest-info{font-size:11px;color:#999;margin-top:2px;line-height:1.5}
+.rest-info a{color:#1565c0;text-decoration:none;border-bottom:1px dotted #1565c0}
+.rest-info a:hover{border-bottom-style:solid}
 
-  .rest-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: #e64a19;
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 1px dotted #e64a19;
-    cursor: pointer;
-  }
-  .rest-link:hover { color: #bf360c; border-bottom-style: solid; }
-  .rest-info {
-    font-size: 12px;
-    color: #888;
-    margin-top: 2px;
-  }
-  .rest-info a {
-    color: #1976d2;
-    text-decoration: none;
-    border-bottom: 1px dotted #1976d2;
-  }
-  .rest-info a:hover { border-bottom-style: solid; }
+.dinner-rec{background:#fef9ef;border-radius:10px;padding:10px 14px;margin:6px 0;border-left:3px solid #d84315}
+.dinner-rec .label{font-size:10px;font-weight:700;color:#d84315;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
 
-  .dinner-rec {
-    background: #fef9ef;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin: 6px 0;
-    border-left: 3px solid #e64a19;
-  }
-  .dinner-rec .label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #e64a19;
-    margin-bottom: 4px;
-  }
+.img-spot{width:100%;height:160px;border-radius:10px;object-fit:cover;margin:8px 0;display:block}
+.img-spot-sm{width:100%;height:100px;border-radius:8px;object-fit:cover;display:block}
+.img-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
 
-  .footer {
-    text-align: center;
-    padding: 24px;
-    color: #999;
-    font-size: 13px;
-    font-weight: 300;
-  }
+.footer{text-align:center;padding:24px 16px 32px;color:#bbb;font-size:12px;font-weight:300;line-height:1.8}
 
-  #map {
-    width: 100%;
-    height: 480px;
-    border-radius: 16px;
-    margin: 20px 0;
-    border: 2px solid #e0e0e0;
-    z-index: 0;
-  }
-  .map-section-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a237e;
-    margin: 24px 0 4px 0;
-  }
-  .map-section-sub {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 10px;
-  }
-  .leaflet-popup-content {
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-  .leaflet-popup-content strong { color: #1a237e; }
+#map{width:100%;height:380px;border-radius:14px;margin:0;border:0;z-index:0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.map-wrap{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.map-wrap .title{font-size:16px;font-weight:700;color:#0f1b4d;margin-bottom:2px}
+.map-wrap .sub{font-size:12px;color:#999;margin-bottom:12px}
+.leaflet-popup-content{font-family:'Noto Sans KR',sans-serif;font-size:12px;line-height:1.4}
+.leaflet-popup-content strong{color:#0f1b4d}
 
-  .family-summary{background:#fff;padding:18px 22px;border-bottom:1px solid #e8edf2}
-  .family-summary h3{font-size:15px;font-weight:700;color:#0f1b4d;margin-bottom:10px}
-  .family-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
-  .family-card{border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.6}
+.section-title{font-size:16px;font-weight:700;color:#0f1b4d;margin:20px 0 2px;display:flex;align-items:center;gap:6px}
+.section-sub{font-size:12px;color:#999;margin-bottom:10px}
+
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
+.gallery-item{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1}
+.gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-item .glabel{position:absolute;bottom:0;left:0;right:0;padding:18px 8px 6px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:10px;font-weight:600}
+
+@media(max-width:600px){
+.hero{height:280px}
+.hero h1{font-size:26px}
+.container{margin:-30px auto 0;padding:0 8px}
+.day-header{padding:12px}
+.day-header .date-badge{min-width:36px}
+.day-header .date-badge .day-num{font-size:18px}
+.event-time{min-width:48px;font-size:11px}
+.family-grid{grid-template-columns:1fr 1fr}
+.gallery{grid-template-columns:repeat(3,1fr);gap:4px}
+.img-row{grid-template-columns:1fr 1fr;gap:4px}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.day-card{animation:fadeUp .4s ease-out both}
+.day-card:nth-child(2){animation-delay:.05s}
+.day-card:nth-child(3){animation-delay:.1s}
+.day-card:nth-child(4){animation-delay:.15s}
+.day-card:nth-child(5){animation-delay:.2s}
+.day-card:nth-child(6){animation-delay:.25s}
+.day-card:nth-child(7){animation-delay:.3s}
 </style>
 </head>
 <body>
+
+<div class="hero">
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
+<div class="hero-content">
+<div class="hero-badge"><span>🏝 제주도</span><span>👨‍👩‍👧 서율이네</span><span>👴👵 엄마아빠</span><span>👩‍👦‍👦 현아네</span></div>
+<h1>2026 제주도 가족여행</h1>
+<div class="sub">서율이네 &amp; 엄마아빠 &amp; 현아네 — 함께하는 여름</div>
+<div class="dates">2026. 8. 10 (월) ~ 8. 16 (일) · 6박 7일</div>
+</div>
+</div>
+
 <div class="container">
 
-  <div class="header">
-    <h1>2026 제주도 가족여행</h1>
-    <div class="sub">서율이네 &amp; 엄마아빠 &amp; 현아네 — 함께하는 여름</div>
-    <div class="dates">2026. 8. 10 (월) ~ 8. 16 (일) · 6박 7일</div>
-  </div>
+<!-- FAMILY SUMMARY -->
+<div class="summary-card">
+<h3>🌄 가족별 도착 · 출발 일정</h3>
+<div class="family-grid">
+<div class="family-card" style="background:#e3f2fd"><div class="fc-name">🚢 서율이네</div><div class="fc-in">✅ 도착: 8/10(월) 15:00 · 산타모니카호 (3명+Model Y)</div><div class="fc-out">🛫 출발: 8/16(일) 11:00 · 제주→진도</div><div style="font-size:10px;color:#666;margin-top:2px">🏨 아스타호텔 → 신화월드 → 한화리조트</div></div>
+<div class="family-card" style="background:#fce4ec"><div class="fc-name">✈️ 엄마아빠</div><div class="fc-in">✅ 도착: 8/13(목) 15:15 · TW723 (Q49PP3)</div><div class="fc-out">🛫 출발: 8/16(일) 15:10 · OZ8950 (E6ZKAO)</div></div>
+<div class="family-card" style="background:#e8f5e9"><div class="fc-name">✈️ 현아+우빈</div><div class="fc-in">✅ 도착: 8/14(금) 14:10</div><div class="fc-out">🛫 출발: 8/18(화) 17:20</div></div>
+<div class="family-card" style="background:#e8f5e9"><div class="fc-name">✈️ 훈이 🚗</div><div class="fc-in">✅ 도착: 8/15(토) 07:55 · 공항 렌트카</div><div class="fc-out">🛫 출발: 8/18(화) 07:40</div></div>
+</div></div>
 
-  <div class="family-summary">
-    <h3>🌄 가족별 제주 도착 · 출발 일정</h3>
-    <div class="family-grid">
-      <div class="family-card" style="background:#e3f2fd">
-        <div style="font-weight:700;font-size:13px;margin-bottom:3px">🚢 서율이네</div>
-        <div style="color:#2e7d32">✅ 도착: 8/10(월) 15:00 · 산타모니카호 진도→제주 (3명+Model Y)</div>
-        <div style="color:#c62828">🛫 출발: 8/16(일) 11:00 · 산타모니카호 제주→진도</div>
-        <div style="font-size:11px;color:#555;margin-top:2px">🏨 8/10 아스타호텔 → 8/11~12 신화월드 → 8/13~15 한화리조트</div>
-      </div>
-      <div class="family-card" style="background:#fce4ec">
-        <div style="font-weight:700;font-size:13px;margin-bottom:3px">✈️ 엄마아빠</div>
-        <div style="color:#2e7d32">✅ 도착: 8/13(목) 15:15 · TW723 김포→제주 (Q49PP3)</div>
-        <div style="color:#c62828">🛫 출발: 8/16(일) 15:10 · OZ8950 제주→김포 (E6ZKAO)</div>
-      </div>
-      <div class="family-card" style="background:#e8f5e9">
-        <div style="font-weight:700;font-size:13px;margin-bottom:3px">✈️ 현아+우빈</div>
-        <div style="color:#2e7d32">✅ 도착: 8/14(금) 14:10</div>
-        <div style="color:#c62828">🛫 출발: 8/18(화) 17:20</div>
-      </div>
-      <div class="family-card" style="background:#e8f5e9">
-        <div style="font-weight:700;font-size:13px;margin-bottom:3px">✈️ 훈이</div>
-        <div style="color:#2e7d32">✅ 도착: 8/15(토) 07:55 · 공항 렌트카 픽업 🚗</div>
-        <div style="color:#c62828">🛫 출발: 8/18(화) 07:40</div>
-      </div>
-    </div>
-  </div>
+<!-- LEGEND -->
+<div class="legend">
+<div class="legend-item"><span class="legend-dot" style="background:#1976d2"></span> 서율이네</div>
+<div class="legend-item"><span class="legend-dot" style="background:#e91e63"></span> 엄마아빠</div>
+<div class="legend-item"><span class="legend-dot" style="background:#4caf50"></span> 현아네</div>
+<div class="legend-item"><span class="legend-dot" style="background:#ff9800"></span> 모두 함께</div>
+</div>
 
-  <div class="legend">
-    <div class="legend-item"><span class="legend-dot" style="background:#1976d2"></span> 서율이네 (서율+엄마+아빠)</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#e91e63"></span> 엄마아빠 (할머니+할아버지)</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#4caf50"></span> 현아네 (현아+우빈+훈이)</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#ff9800"></span> 모두 함께</div>
-  </div>
+<!-- GALLERY -->
+<div class="section-title">📸 제주 여행 스팟</div>
+<div class="section-sub">함께할 제주의 아름다운 곳들</div>
+<div class="gallery">
+<div class="gallery-item"><img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=400&q=80" alt="한라산" loading="lazy"><div class="glabel">🏔 한라산</div></div>
+<div class="gallery-item"><img src="https://images.unsplash.com/photo-1596558450255-7c0b7be9f56a?w=400&q=80" alt="함덕해변" loading="lazy"><div class="glabel">🏖 함덕해변</div></div>
+<div class="gallery-item"><img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=400&q=80" alt="성산일출봉" loading="lazy"><div class="glabel">🌅 성산일출봉</div></div>
+</div>
 
-  <!-- Day 1: 8/10 (Mon) -->
-  <div class="day-card">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">10</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">MON</div>
-      </div>
-      <div class="day-summary"><span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 제주 도착</div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
-      <div class="event">
-        <div class="event-time">오전~오후</div>
-        <div class="event-desc">
-          <strong>서율이네</strong> 배 타고 제주도 도착 🚢<br>
-          <span style="font-size:13px;color:#888">
-            🚢 산타모니카호 · 진도→제주 · 13:30 출항 → 15:00 도착 (서율이네 3명 + 테슬라 Model Y)
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">저녁</div>
-        <div class="event-desc">
-          <div class="dinner-rec">
-            <div class="label">🍽 저녁 추천</div>
-            <strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%86%90%EB%A7%9B%EC%B4%8C%20%EC%A0%9C%EC%A3%BC" target="_blank">손맛촌</a></strong>
-            — 고사리갈치조림 · 감자탕 (한화리조트랑 5분거리, 에코랜드 근처)<br>
-            <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%A1%B0%EC%B2%9C%EC%9D%8D%20%EB%B9%84%EC%9E%90%EB%A6%BC%EB%A1%9C%20661" target="_blank">제주 조천읍 비자림로 661</a>
-               · 📞 <a href="tel:0647833375">064-783-3375</a>
-               · ⏰ 09:00-20:30 (수 휴무 · 브레이크 15:30-17:00)
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">숙소</div>
-        <div class="event-desc">
-          🏨 <strong>아스타호텔</strong> (제주시 서사로 129) — 1박<br>
-          <span style="font-size:12px;color:#888">공항 10분 · 시내중심</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- DAY 1 -->
+<div class="day-card">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num">10</div><div class="day-name">8월</div><div class="day-week">MON</div></div>
+<div class="day-summary"><span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 제주 도착</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">오전~오후</div><div class="event-desc"><strong>서율이네</strong> 배 타고 제주도 도착 🚢<br><span style="font-size:12px;color:#888">🚢 산타모니카호 · 진도→제주 · 13:30 출항 → 15:00 도착 (서율이네 3명 + 테슬라 Model Y)</span></div></div>
+<div class="event"><div class="event-time">저녁</div><div class="event-desc"><div class="dinner-rec"><div class="label">🍽 저녁 추천</div><strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%86%90%EB%A7%9B%EC%B4%8C%20%EC%A0%9C%EC%A3%BC" target="_blank">손맛촌</a></strong> — 고사리갈치조림 · 감자탕 (한화리조트랑 5분거리, 에코랜드 근처)<br><span class="rest-info">📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%A1%B0%EC%B2%9C%EC%9D%8D%20%EB%B9%84%EC%9E%90%EB%A6%BC%EB%A1%9C%20661" target="_blank">제주 조천읍 비자림로 661</a> · 📞 <a href="tel:0647833375">064-783-3375</a> · ⏰ 09:00-20:30 (수 휴무 · 브레이크 15:30-17:00)</span></div></div></div>
+<div class="event"><div class="event-time">숙소</div><div class="event-desc">🏨 <strong>아스타호텔</strong> (제주시 서사로 129) — 1박<br><span style="font-size:11px;color:#888">공항 10분 · 시내중심</span></div></div>
+</div></div>
 
-  <!-- Day 2: 8/11 (Tue) -->
-  <div class="day-card">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">11</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">TUE</div>
-      </div>
-      <div class="day-summary"><span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 자유일정</div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
-      <div class="event">
-        <div class="event-time">종일</div>
-        <div class="event-desc">
-          <strong>서율이네</strong> 제주 여행 자유일정<br>
-          <span style="font-size:13px;color:#888">관광지 · 맛집 탐방 등</span>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">저녁</div>
-        <div class="event-desc">
-          <div class="dinner-rec">
-            <div class="label">🍽 저녁 추천</div>
-            <strong><a class="rest-link" href="https://map.naver.com/p/search/%EB%AA%85%EC%A7%84%EC%A0%84%EB%B3%B5" target="_blank">명진전복</a></strong>
-            — 전복돌솥밥 · 전복죽 · 전복구이 (세화해변 근처)<br>
-            <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EA%B5%AC%EC%A2%8C%EC%9D%8D%20%ED%95%B4%EB%A7%9E%EC%9D%B4%ED%95%B4%EC%95%88%EB%A1%9C%201282" target="_blank">제주 구좌읍 해맞이해안로 1282</a>
-               · 📞 <a href="tel:0647829944">064-782-9944</a>
-               · ⏰ 09:30-21:00 (화 휴무)
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">숙소</div>
-        <div class="event-desc">🏨 <strong>제주신화월드 신화관</strong> (서귀포시 안덕면) — 1박</div>
-      </div>
-    </div>
-  </div>
+<!-- DAY 2 -->
+<div class="day-card">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num">11</div><div class="day-name">8월</div><div class="day-week">TUE</div></div>
+<div class="day-summary"><span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 자유일정</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">종일</div><div class="event-desc"><strong>서율이네</strong> 제주 여행 자유일정<br><span style="font-size:12px;color:#888">관광지 · 맛집 탐방 등</span></div></div>
+<div class="event"><div class="event-time">저녁</div><div class="event-desc"><div class="dinner-rec"><div class="label">🍽 저녁 추천</div><strong><a class="rest-link" href="https://map.naver.com/p/search/%EB%AA%85%EC%A7%84%EC%A0%84%EB%B3%B5" target="_blank">명진전복</a></strong> — 전복돌솥밥 · 전복죽 · 전복구이 (세화해변 근처)<br><span class="rest-info">📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EA%B5%AC%EC%A2%8C%EC%9D%8D%20%ED%95%B4%EB%A7%9E%EC%9D%B4%ED%95%B4%EC%95%88%EB%A1%9C%201282" target="_blank">제주 구좌읍 해맞이해안로 1282</a> · 📞 <a href="tel:0647829944">064-782-9944</a> · ⏰ 09:30-21:00 (화 휴무)</span></div></div></div>
+<div class="event"><div class="event-time">숙소</div><div class="event-desc">🏨 <strong>제주신화월드 신화관</strong> (서귀포시 안덕면) — 1박</div></div>
+</div></div>
 
-  <!-- Day 3: 8/12 (Wed) -->
-  <div class="day-card">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">12</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">WED</div>
-      </div>
-      <div class="day-summary"><span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 자유일정</div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
-      <div class="event">
-        <div class="event-time">종일</div>
-        <div class="event-desc">
-          <strong>서율이네</strong> 제주 여행 자유일정
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">저녁</div>
-        <div class="event-desc">
-          <div class="dinner-rec">
-            <div class="label">🍽 저녁 추천</div>
-            <strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%9A%A9%EB%A8%B8%EB%A6%AC%ED%95%B4%EC%95%88%20%EC%A0%9C%EC%A3%BC%20%EB%A7%9B%EC%A7%91" target="_blank">용머리해안 근처 맛집</a></strong>
-            — 신화월드에서 10분, 동선 최적<br>
-            <span class="rest-info">
-              📍 서귀포시 안덕면 일대
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">숙소</div>
-        <div class="event-desc">🏨 <strong>제주신화월드 신화관</strong> (서귀포시 안덕면) — 2박째</div>
-      </div>
-    </div>
-  </div>
+<!-- DAY 3 -->
+<div class="day-card">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num">12</div><div class="day-name">8월</div><div class="day-week">WED</div></div>
+<div class="day-summary"><span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 자유일정</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">종일</div><div class="event-desc"><strong>서율이네</strong> 제주 여행 자유일정</div></div>
+<div class="event"><div class="event-time">저녁</div><div class="event-desc"><div class="dinner-rec"><div class="label">🍽 저녁 추천 — 신화월드 근처</div><strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%9A%A9%EB%A8%B8%EB%A6%AC%ED%95%B4%EC%95%88%20%EC%A0%9C%EC%A3%BC%20%EB%A7%9B%EC%A7%91" target="_blank">용머리해안 근처 맛집</a></strong> — 신화월드에서 10분, 동선 최적<br><span class="rest-info">📍 서귀포시 안덕면 일대</span></div></div></div>
+<div class="event"><div class="event-time">숙소</div><div class="event-desc">🏨 <strong>제주신화월드 신화관</strong> (서귀포시 안덕면) — 2박째</div></div>
+</div></div>
 
-  <!-- Day 4: 8/13 (Thu) -->
-  <div class="day-card">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">13</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">THU</div>
-      </div>
-      <div class="day-summary">
-        <span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span> 제주 도착
-      </div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
-      <div class="event">
-        <div class="event-time">오후</div>
-        <div class="event-desc">
-          <span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span>
-          <strong>엄마아빠</strong> 제주도 도착 ✈<br>
-          <span style="font-size:13px;color:#888">
-            🛫 김포(D) 14:00 → 🛬 제주 15:15 · 티웨이 TW723 · 예약번호 Q49PP3
-          </span>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">저녁</div>
-        <div class="event-desc">
-          <div class="dinner-rec">
-            <div class="label">🍽 저녁 추천 — 첫 전원모임</div>
-            <strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%84%B1%EB%AF%B8%EA%B0%80%EB%93%A0" target="_blank">성미가든</a></strong>
-            — 닭샤브샤브 + 토종닭백숙 + 녹두죽 🍲 (교래리, 한화리조트 인접)<br>
-            <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%A1%B0%EC%B2%9C%EC%9D%8D%20%EA%B5%90%EB%9E%981%EA%B8%B8%202" target="_blank">제주 조천읍 교래1길 2</a>
-               · 📞 <a href="tel:0647837092">064-783-7092</a>
-               · ⏰ 11:00-20:00 (2,4째주 목 휴무)
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">숙소</div>
-        <div class="event-desc">🏨 <strong>한화리조트 제주</strong> (조천읍 교래리) — 1박</div>
-      </div>
-    </div>
-  </div>
+<!-- DAY 4 -->
+<div class="day-card">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num">13</div><div class="day-name">8월</div><div class="day-week">THU</div></div>
+<div class="day-summary"><span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span> 제주 도착</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">오후</div><div class="event-desc"><span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span> <strong>엄마아빠</strong> 제주도 도착 ✈<br><span style="font-size:12px;color:#888">🛫 김포(D) 14:00 → 🛬 제주 15:15 · 티웨이 TW723 · 예약번호 Q49PP3</span></div></div>
+<div class="event"><div class="event-time">저녁</div><div class="event-desc"><div class="dinner-rec"><div class="label">🍽 저녁 추천 — 첫 전원모임</div><strong><a class="rest-link" href="https://map.naver.com/p/search/%EC%84%B1%EB%AF%B8%EA%B0%80%EB%93%A0" target="_blank">성미가든</a></strong> — 닭샤브샤브 + 토종닭백숙 + 녹두죽 🍲 (교래리, 한화리조트 인접)<br><span class="rest-info">📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%A1%B0%EC%B2%9C%EC%9D%8D%20%EA%B5%90%EB%9E%981%EA%B8%B8%202" target="_blank">제주 조천읍 교래1길 2</a> · 📞 <a href="tel:0647837092">064-783-7092</a> · ⏰ 11:00-20:00 (2,4째주 목 휴무)</span></div></div></div>
+<div class="event"><div class="event-time">숙소</div><div class="event-desc">🏨 <strong>한화리조트 제주</strong> (조천읍 교래리) — 1박</div></div>
+</div></div>
 
-  <!-- Day 5: 8/14 (Fri) ★ 메인데이 -->
-  <div class="day-card special">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">14</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">FRI</div>
-      </div>
-      <div class="day-summary">
-        <span style="font-weight:700;color:#e64a19;">🏔 한라산 등반</span>  ·
-        <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈</span> 도착
-      </div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
+<!-- DAY 5 (special) -->
+<div class="day-card" style="border-left:4px solid #ff8a65;background:linear-gradient(to right,#fff,#fff8f0)">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num" style="color:#e64a19">14</div><div class="day-name">8월</div><div class="day-week" style="color:#e64a19">FRI</div></div>
+<div class="day-summary"><span style="font-weight:700;color:#e64a19">🏔 한라산 등반</span> · <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈</span> 도착</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">새벽</div><div class="event-desc"><div class="highlight-event"><span class="tag" style="background:#ff9800;color:#fff;">★ 메인일정</span><strong> 홍 · 지원 · 서율 · 약사님</strong> — <strong>한라산 성판악 코스 등반</strong> 🏔<br><span style="font-size:12px;color:#888">새벽 일찍 출발 · 정상 도전!</span></div></div></div>
+<div class="event"><div class="event-time">오후</div><div class="event-desc"><span class="people-tag" style="background:#fce4ec;color:#c62828">엄마</span><span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈</span><strong>엄마</strong>(할머니)가 <strong>현아+우빈</strong> 공항/터미널에서 만나서 시간 보내기 ☕<br><span style="font-size:12px;color:#888">🛫 12:55 → 🛬 제주 14:10 · 현아+우빈 도착</span></div></div>
+<div class="event"><div class="event-time">저녁</div><div class="event-desc"><span class="tag" style="background:#ff9800;color:#fff;">★ 모두 모임</span><strong> 전체 가족 합류</strong> — 한라산 팀 + 엄마 + 현아+우빈<div class="dinner-rec" style="margin-top:6px"><div class="label">🍽 저녁 추천 — 등반 기념 회식</div><a class="rest-link" href="https://map.naver.com/p/search/%EA%B3%B1%EB%93%A4%EB%9D%BD%20%ED%95%A8%EB%8D%95" target="_blank">곱들락 함덕흑돼지</a> — 흑돼지 오겹살 · 목살 · 말돈소금 🥩<br><span class="rest-info">📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%ED%95%A8%EB%8D%9518%EA%B8%B8%2019" target="_blank">제주 조천읍 함덕18길 19</a> · 📞 <a href="tel:0647830992">064-783-0992</a> · ⏰ 12:00-22:00 (화 휴무 · 라스트오더 21:00) · ⚠️ 아직 예약불가</span></div></div></div>
+<div class="event"><div class="event-time">숙소</div><div class="event-desc">🏨 <strong>한화리조트 제주</strong> (조천읍 교래리) — 2박째</div></div>
+</div></div>
 
-      <div class="event">
-        <div class="event-time">새벽</div>
-        <div class="event-desc">
-          <div class="highlight-event">
-            <span class="tag" style="background:#ff9800;color:#fff;">★ 메인일정</span>
-            <strong>홍 · 지원 · 서율 · 약사님</strong> —
-            <strong>한라산 성판악 코스 등반</strong> 🏔<br>
-            <span style="font-size:13px;color:#888">새벽 일찍 출발 · 정상 도전!</span>
-          </div>
-        </div>
-      </div>
+<!-- DAY 6 -->
+<div class="day-card">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num">15</div><div class="day-name">8월</div><div class="day-week">SAT</div></div>
+<div class="day-summary"><span class="people-tag" style="background:#e8f5e9;color:#2e7d32">훈이</span> 도착 · 진짜 전원 모임</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">오전/오후</div><div class="event-desc"><span class="people-tag" style="background:#e8f5e9;color:#2e7d32">훈이</span><strong>훈이</strong> 제주 도착 ✈ · 공항에서 <strong>렌트카 픽업</strong> 🚗<br><span style="font-size:12px;color:#888">🛫 06:40 → 🛬 제주 07:55</span></div></div>
+<div class="event"><div class="event-time">종일</div><div class="event-desc"><span class="tag" style="background:#ff9800;color:#fff;">★ 전원모임</span><strong> 서율이네 + 엄마아빠 + 현아+우빈 + 훈이</strong> — 모두 함께하는 제주여행 🎉</div></div>
+<div style="margin:8px 0 3px;font-size:12px;font-weight:700;color:#d84315;">📋 추천 일정안 1</div>
+<div class="route-box"><div class="route-step"><span class="route-time">오전</span><span><strong>순풍해장국</strong> (함덕) — 해장국으로 든든하게</span></div><div class="route-step"><span class="route-time">~오후</span><span><strong>함덕바다</strong> 구경 + 폰스 카페</span></div><div class="route-step"><span class="route-time">간식</span><span><strong>성광떡방앗간</strong> 팥빙수 🍧</span></div><div class="route-step"><span class="route-time">오후</span><span><strong>세화오일장</strong> 구경 + 세화 마을 산책</span></div><div class="route-step"><span class="route-time">선택</span><span><strong>비자림</strong> 산책 (컨디션 보고)</span></div><div class="route-step"><span class="route-time">~저녁</span><span>숙소 복귀 · 재정비 · <strong>우빈이 체크인</strong></span></div><div class="route-step"><span class="route-time">저녁</span><span><a class="rest-link" href="https://map.naver.com/p/search/%EC%84%B1%EB%AF%B8%EA%B0%80%EB%93%A0" target="_blank">성미가든</a> — 닭샤브 + 녹두백숙 🍲</span></div></div>
+<div style="margin:10px 0 3px;font-size:12px;font-weight:700;color:#2e7d32;">📋 추천 일정안 2</div>
+<div class="route-box"><div class="route-step"><span class="route-time">오전</span><span><strong>동화마을</strong> 구경 — 특색있는 파리바게트 · 스타벅스 · <strong>성이시돌목장</strong> 🐄</span></div><div class="route-step"><span class="route-time">~오후</span><span><strong>블루보틀 제주</strong> — 커피 한 잔 ☕</span></div><div class="route-step"><span class="route-time">선택</span><span><strong>비자림</strong> 산책 (컨디션 봐서)</span></div><div class="route-step"><span class="route-time">간식</span><span><strong>평대스낵</strong> — 떡볶이 · 튀김 🍤</span></div><div class="route-step"><span class="route-time">오후</span><span><strong>세화오일장</strong> 구경</span></div><div class="route-step"><span class="route-time">저녁</span><span>함덕 이동 → <a class="rest-link" href="https://map.naver.com/p/search/%EC%8B%B1%EC%8B%B1%EC%B4%98%EB%A7%9B%EC%A7%91" target="_blank">회 싱싱촌 (싱싱촘맛집)</a> — 한치물회 · 회국수 🐟<br><span class="rest-info">📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%A1%B0%EC%B2%9C%EC%9D%8D%20%ED%95%A8%EB%8D%95%EB%A6%AC%203129" target="_blank">제주 조천읍 함덕리 3129</a> · 📞 <a href="tel:050713269740">0507-1326-9740</a> · ⏰ 11:00-21:00 (브레이크 14:30-17:00)</span><br><span style="font-size:11px;color:#888;">회 포장해서 숙소에서 먹고싶다면 조천항 → <strong>조천수산</strong></span></span></div><div class="route-step"><span class="route-time">야식</span><span><a class="rest-link" href="https://map.naver.com/p/search/%EB%8F%8C%EB%8B%B4%ED%86%B5%EB%8B%AD%20%EC%A0%9C%EC%A3%BC" target="_blank">돌담통닭</a> 포장해서 숙소로 이동<br><span class="rest-info">📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EA%B5%AC%EC%A2%8C%EC%9D%8D%20%ED%8F%89%EB%8C%80%EB%A6%AC%203346-13" target="_blank">제주 구좌읍 평대리 3346-13</a> · 📞 <a href="tel:0647825892">064-782-5892</a></span><br><span style="font-size:11px;color:#888;">2차 — 우빈이네 늦은 체크인 🏠</span></span></div></div>
+<div class="event"><div class="event-time">숙소</div><div class="event-desc">🏨 <strong>한화리조트 제주</strong> (조천읍 교래리) — 3박째</div></div>
+</div></div>
 
-      <div class="event">
-        <div class="event-time">오후</div>
-        <div class="event-desc">
-          <span class="people-tag" style="background:#fce4ec;color:#c62828">엄마</span>
-          <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈</span>
-          <strong>엄마</strong>(할머니)가 <strong>현아+우빈</strong> 공항/터미널에서 만나서 시간 보내기 ☕<br>
-          <span style="font-size:13px;color:#888">🛫 12:55 → 🛬 제주 14:10 · 현아+우빈 도착</span>
-        </div>
-      </div>
+<!-- DAY 7 -->
+<div class="day-card">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num">16</div><div class="day-name">8월</div><div class="day-week">SUN</div></div>
+<div class="day-summary"><span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span> 오후 출발 · <span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 출발</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">오전</div><div class="event-desc">마지막 제주 시간 · 자유일정 / 간단 관광</div></div>
+<div class="event"><div class="event-time">오후</div><div class="event-desc"><span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span><strong>엄마아빠</strong> 오후 출발 ✈<br><span style="font-size:12px;color:#888">🛫 제주 15:10 → 🛬 김포(D) 16:25 · 아시아나 OZ8950 · 예약번호 E6ZKAO</span><br><span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span><strong>서율이네</strong> 배 타고 출발 🚢<br><span style="font-size:12px;color:#888">🚢 산타모니카호 · 제주→진도 · 11:00 출항 → 12:30 도착 (서율이네 3명 + 테슬라 Model Y)</span></div></div>
+<div class="event"><div class="event-time">점심</div><div class="event-desc"><div class="dinner-rec"><div class="label">🍽 점심 추천 — 마지막 식사</div>
+<strong>선택 1.</strong> <a class="rest-link" href="https://map.naver.com/p/search/%EB%82%AD%EC%9D%B4%EB%84%A4%20%EC%A0%9C%EC%A3%BC" target="_blank">낭이네</a> — 제주시내 고등어조림 · 갈치조림 🐟<br><span class="rest-info">📍 제주시내 · 제주항/공항 접근성 좋음</span><br><br>
+<strong>선택 2.</strong> <a class="rest-link" href="https://map.naver.com/p/search/%EB%A7%8C%EC%A1%B1%ED%95%9C%EC%83%81%ED%9A%8C%20%EC%A0%9C%EC%A3%BC%EC%8B%9C" target="_blank">만족한상회 제주시점</a> — 순살갈치조림 · 통갈치구이<br><span class="rest-info">📍 제주시 용담 · 공항 5분</span>
+</div></div></div>
+</div></div>
 
-      <div class="event">
-        <div class="event-time">저녁</div>
-        <div class="event-desc">
-          <span class="tag" style="background:#ff9800;color:#fff;">★ 모두 모임</span>
-          <strong>전체 가족 합류</strong> — 한라산 다녀온 팀 + 엄마 + 현아+우빈<br>
-          <span style="font-size:13px;color:#888">등반 기념 + 환영 — 제대로 먹기!</span>
+<!-- 추가 일정 -->
+<div class="day-card" style="border-left-color:#4caf50">
+<div class="day-header" onclick="tog(this)">
+<div class="date-badge"><div class="day-num">17~18</div><div class="day-name">8월</div><div class="day-week">MON-TUE</div></div>
+<div class="day-summary"><span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈+훈이</span> 추가 일정</div>
+<div class="toggle-icon">▼</div></div>
+<div class="day-body">
+<div class="event"><div class="event-time">8/17(월)</div><div class="event-desc"><span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈+훈이</span> 자유일정 · 추가 1박</div></div>
+<div class="event"><div class="event-time">8/18(화)</div><div class="event-desc">🛫 <strong>훈이</strong> 06:25 → 07:40 출발<br>🛫 <strong>현아+우빈</strong> 16:25 → 17:20 출발</div></div>
+</div></div>
 
-          <div class="dinner-rec" style="margin-top:8px;">
-            <div class="label">🍽 저녁 추천 — 등반 기념 회식</div>
-            <strong>선택 1.</strong> <a class="rest-link" href="https://map.naver.com/p/search/%ED%92%8D%EB%A1%9C%20%EC%A4%91%EB%AC%B8" target="_blank">풍로 중문점</a>
-            — 흑돼지 오마카세 (직원이 구워줌) 🥩<br>
-            <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%ED%92%8D%EB%A1%9C%20%EC%A4%91%EB%AC%B8" target="_blank">제주 서귀포시 중문</a>
-               · 📞 <a href="tel:050714050826">0507-1405-0826</a>
-            </span>
-            <br><br>
-            <strong>선택 2.</strong> <a class="rest-link" href="https://map.naver.com/p/search/%EB%82%AD%EC%BF%B0%EB%82%AD%EC%BF%B0%20%EC%82%B0%EB%B0%A9%EC%82%B0" target="_blank">낭쿰낭쿰 산방산점</a>
-            — 흑돼지해물갈비전골 🐷🦐 (한라산 내려와서 얼큰한 국물)<br>
-            <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EB%8C%80%EC%A0%95%EC%9D%8D%20%EC%98%81%EC%96%B4%EB%8F%84%EC%8B%9C%EB%A1%9C%2074" target="_blank">제주 대정읍 영어도시로 74 1층</a>
-               · 📞 <a href="tel:050713493149">0507-1349-3149</a>
-               · ⏰ 11:00-22:00 (월 휴무 · 브레이크 15:00-17:00)
-            </span>
-          </div>
-        </div>
-      </div>
+<!-- MAP -->
+<div class="map-wrap">
+<div class="title">📍 제주 여행 지도</div>
+<div class="sub">숙소 · 맛집 · 주요 장소 위치 — 핀을 클릭하면 정보가 나와요</div>
+<div id="map"></div>
+</div>
 
-      <div class="event">
-        <div class="event-time">숙소</div>
-        <div class="event-desc">🏨 <strong>한화리조트 제주</strong> (조천읍 교래리) — 2박째</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Day 6: 8/15 (Sat) -->
-  <div class="day-card">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">15</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">SAT</div>
-      </div>
-      <div class="day-summary">
-        <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">훈이</span> 도착 ·
-        진짜 전원 모임
-      </div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
-      <div class="event">
-        <div class="event-time">오전/오후</div>
-        <div class="event-desc">
-          <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">훈이</span>
-          <strong>훈이</strong> 제주 도착 ✈ · 공항에서 <strong>렌트카 픽업</strong> 🚗<br>
-          <span style="font-size:13px;color:#888">🛫 06:40 → 🛬 제주 07:55</span>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">종일</div>
-        <div class="event-desc">
-          <span class="tag" style="background:#ff9800;color:#fff;">★ 전원모임</span>
-          <strong>서율이네 + 엄마아빠 + 현아+우빈 + 훈이</strong> — 모두 함께하는 제주여행 🎉
-        </div>
-      </div>
-
-      <!-- 추천안 1 -->
-      <div style="margin:10px 0 4px;font-size:13px;font-weight:700;color:#e64a19;">📋 추천 일정안 1</div>
-      <div class="route-box">
-        <div class="route-step">
-          <span class="route-time">오전</span>
-          <span><strong>순풍해장국</strong> (함덕) — 해장국으로 든든하게</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">~오후</span>
-          <span><strong>함덕바다</strong> 구경 + 폰스 카페</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">간식</span>
-          <span><strong>성광떡방앗간</strong> 팥빙수 🍧</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">오후</span>
-          <span><strong>세화오일장</strong> 구경 + 세화 마을 산책</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">선택</span>
-          <span><strong>비자림</strong> 산책 (컨디션 보고)</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">~저녁</span>
-          <span>숙소 복귀 · 재정비 · <strong>우빈이 체크인</strong></span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">저녁</span>
-          <span><a class="rest-link" href="https://map.naver.com/p/search/%EC%84%B1%EB%AF%B8%EA%B0%80%EB%93%A0" target="_blank">성미가든</a> — 닭샤브 + 녹두백숙 🍲</span>
-        </div>
-      </div>
-
-      <!-- 추천안 2 -->
-      <div style="margin:16px 0 4px;font-size:13px;font-weight:700;color:#2e7d32;">📋 추천 일정안 2</div>
-      <div class="route-box">
-        <div class="route-step">
-          <span class="route-time">오전</span>
-          <span><strong>동화마을</strong> 구경 — 특색있는 파리바게트 · 스타벅스 · <strong>성이시돌목장</strong> 🐄</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">~오후</span>
-          <span><strong>블루보틀 제주</strong> — 커피 한 잔 ☕</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">선택</span>
-          <span><strong>비자림</strong> 산책 (컨디션 봐서)</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">간식</span>
-          <span><strong>평대스낵</strong> — 떡볶이 · 튀김 🍤</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">오후</span>
-          <span><strong>세화오일장</strong> 구경</span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">저녁</span>
-          <span>함덕 이동 → <a class="rest-link" href="https://map.naver.com/p/search/%EC%8B%B1%EC%8B%B1%EC%B4%98%EB%A7%9B%EC%A7%91" target="_blank">회 싱싱촌 (싱싱촘맛집)</a> — 한치물회 · 회국수 🐟<br>
-          <span class="rest-info">
-            📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%A1%B0%EC%B2%9C%EC%9D%8D%20%ED%95%A8%EB%8D%95%EB%A6%AC%203129" target="_blank">제주 조천읍 함덕리 3129</a>
-             · 📞 <a href="tel:050713269740">0507-1326-9740</a>
-             · ⏰ 11:00-21:00 (브레이크 14:30-17:00)
-          </span><br>
-          <span style="font-size:12px;color:#888;">회 포장해서 숙소에서 먹고싶다면 조천항 → <strong>조천수산</strong></span></span>
-        </div>
-        <div class="route-step">
-          <span class="route-time">야식</span>
-          <span><a class="rest-link" href="https://map.naver.com/p/search/%EB%8F%8C%EB%8B%B4%ED%86%B5%EB%8B%AD%20%EC%A0%9C%EC%A3%BC" target="_blank">돌담통닭</a> 포장해서 숙소로 이동<br>
-          <span class="rest-info">
-            📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EA%B5%AC%EC%A2%8C%EC%9D%8D%20%ED%8F%89%EB%8C%80%EB%A6%AC%203346-13" target="_blank">제주 구좌읍 평대리 3346-13</a>
-             · 📞 <a href="tel:0647825892">064-782-5892</a>
-          </span><br>
-          <span style="font-size:12px;color:#888;">2차 — 우빈이네 늦은 체크인 🏠</span></span>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">숙소</div>
-        <div class="event-desc">🏨 <strong>한화리조트 제주</strong> (조천읍 교래리) — 3박째</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Day 7: 8/16 (Sun) -->
-  <div class="day-card">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">16</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">SUN</div>
-      </div>
-      <div class="day-summary">
-        <span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span> 오후 출발 ·
-        <span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span> 출발
-      </div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
-      <div class="event">
-        <div class="event-time">오전</div>
-        <div class="event-desc">
-          마지막 제주 시간 · 자유일정 / 간단 관광
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">오후</div>
-        <div class="event-desc">
-          <span class="people-tag" style="background:#fce4ec;color:#c62828">엄마아빠</span>
-          <strong>엄마아빠</strong> 오후 출발 ✈<br>
-          <span style="font-size:13px;color:#888">
-            🛫 제주 15:10 → 🛬 김포(D) 16:25 · 아시아나 OZ8950 · 예약번호 E6ZKAO
-          </span><br>
-          <span class="people-tag" style="background:#e3f2fd;color:#1565c0">서율이네</span>
-          <strong>서율이네</strong> 배 타고 출발 🚢<br>
-          <span style="font-size:13px;color:#888">
-            🚢 산타모니카호 · 제주→진도 · 11:00 출항 → 12:30 도착 (서율이네 3명 + 테슬라 Model Y) · 11:00 출항 → 12:30 도착
-          </span>
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">점심</div>
-        <div class="event-desc">
-          <div class="dinner-rec">
-            <div class="label">🍽 점심 추천 — 마지막 식사</div>
-            <strong>선택 1.</strong> <a class="rest-link" href="https://map.naver.com/p/search/%EC%A4%91%EB%AC%B8%EA%B3%A0%EB%93%B1%EC%96%B4%EC%8C%88%EB%B0%A5" target="_blank">중문고등어쌈밥</a>
-            — 묵은지고등어쌈밥 + 전복돌솥밥 · 꽃밭 구경 가능 🌸<br>
-            <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%EC%A0%9C%EC%A3%BC%20%EC%84%9C%EA%B7%80%ED%8F%AC%EC%8B%9C%20%EC%9D%BC%EC%A3%BC%EC%84%9C%EB%A1%9C%201240" target="_blank">제주 서귀포시 일주서로 1240</a>
-               · 📞 <a href="tel:050713612457">0507-1361-2457</a>
-               · ⏰ 09:00-20:30
-            </span>
-            <br><br>
-            <strong>선택 2.</strong> <a class="rest-link" href="https://map.naver.com/p/search/%EB%A7%8C%EC%A1%B1%ED%95%9C%EC%83%81%ED%9A%8C%20%EC%A4%91%EB%AC%B8" target="_blank">만족한상회 중문점</a>
-            — 순살갈치조림 · 통갈치구이 (가족 마지막 식사로 딱)<br>
-            <span class="rest-info">
-              📍 <a href="https://map.naver.com/p/search/%EB%A7%8C%EC%A1%B1%ED%95%9C%EC%83%81%ED%9A%8C%20%EC%A4%91%EB%AC%B8" target="_blank">제주 서귀포시 중문</a>
-               · 📞 <a href="tel:050713181388">0507-1318-1388</a>
-               · ⏰ 10:00-21:00 (수 휴무 · 브레이크 15:00-17:00)
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 현아네 추가 일정: 8/17~8/18 -->
-  <div class="day-card" style="border-left-color:#4caf50;">
-    <div class="day-header" onclick="tog(this)">
-      <div class="date-badge">
-        <div class="day-num">17~18</div>
-        <div class="day-name">8월</div>
-        <div class="day-week">MON-TUE</div>
-      </div>
-      <div class="day-summary">
-        <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈+훈이</span> 추가 일정
-      </div>
-      <div class="toggle-icon">▼</div>
-    </div>
-    <div class="day-body">
-      <div class="event">
-        <div class="event-time">8/17(월)</div>
-        <div class="event-desc">
-          <span class="people-tag" style="background:#e8f5e9;color:#2e7d32">현아+우빈+훈이</span>
-          자유일정 · 추가 1박
-        </div>
-      </div>
-      <div class="event">
-        <div class="event-time">8/18(화)</div>
-        <div class="event-desc">
-          🛫 <strong>훈이</strong> 06:25 → 07:40 출발<br>
-          🛫 <strong>현아+우빈</strong> 16:25 → 17:20 출발
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="map-section-title">📍 제주 여행 지도</div>
-  <div class="map-section-sub">숙소 · 맛집 · 주요 장소 위치 — 핀을 클릭하면 정보가 나와요</div>
-  <div id="map"></div>
-
-  <div class="footer">
-    🏝 2026 가족 제주도 여행 · 서율이네 + 엄마아빠 + 현아네
-  </div>
+<div class="footer">
+🏝 2026 가족 제주도 여행 · 서율이네 + 엄마아빠 + 현아네<br>
+Made with ❤️ for our Jeju family trip
+</div>
 
 </div>
 
 <script>
-function tog(el) {
-  const card = el.closest('.day-card');
-  card.classList.toggle('collapsed');
-}
+function tog(el){const card=el.closest('.day-card');card.classList.toggle('collapsed')}
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const map = L.map('map').setView([33.41, 126.61], 10);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap',
-  maxZoom: 18
-}).addTo(map);
-
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:18}).addTo(map);
 const places = [
-  { name: '🏠 한화리조트 제주', pos: [33.4490, 126.6374], color: '#1a237e', desc: '숙소 · 6박 7일' },
-  { name: '✈ 제주공항', pos: [33.5113, 126.4930], color: '#e91e63', desc: '엄마아빠 도착/출발 · 현아네 도착' },
-  { name: '🚢 제주항', pos: [33.5280, 126.5200], color: '#1976d2', desc: '서율이네 배 도착/출발 (산타모니카호)' },
-  { name: '🏔 한라산 성판악', pos: [33.3850, 126.6192], color: '#e64a19', desc: '8/14 등반 · 홍·지원·서율·약사님' },
-  { name: '🍽 손맛촌', pos: [33.4329, 126.7098], color: '#e64a19', desc: '8/10 저녁 · 갈치조림' },
-  { name: '🍽 명진전복', pos: [33.5325, 126.8501], color: '#e64a19', desc: '8/11 저녁 · 전복돌솥밥' },
-  { name: '🍽 칠돈가', pos: [33.5024, 126.5108], color: '#e64a19', desc: '8/12 저녁 · 흑돼지' },
-  { name: '🍽 성미가든', pos: [33.4309, 126.6801], color: '#e64a19', desc: '8/13 · 8/15 저녁 · 닭샤브' },
-  { name: '🍽 풍로 중문점', pos: [33.2561, 126.4149], color: '#e64a19', desc: '8/14 저녁선택 · 흑돼지 오마카세' },
-  { name: '🍽 낭쿰낭쿰', pos: [33.2797, 126.2899], color: '#e64a19', desc: '8/14 저녁선택 · 해물갈비전골' },
-  { name: '🍽 싱싱촘맛집', pos: [33.5348, 126.6641], color: '#e64a19', desc: '8/15 추천안2 · 회국수' },
-  { name: '🍗 돌담통닭', pos: [33.5184, 126.8348], color: '#e64a19', desc: '8/15 야식 · 포장' },
-  { name: '🍽 중문고등어쌈밥', pos: [33.2645, 126.3901], color: '#e64a19', desc: '8/16 점심선택 · 고등어쌈밥' },
-  { name: '🍽 만족한상회', pos: [33.2542, 126.4267], color: '#e64a19', desc: '8/16 점심선택 · 갈치조림' },
-  { name: '🏖 함덕해수욕장', pos: [33.5425, 126.6680], color: '#4caf50', desc: '8/15 일정' },
-  { name: '🌳 비자림', pos: [33.4190, 126.7870], color: '#4caf50', desc: '8/15 선택코스' },
-  { name: '🌿 세화오일장', pos: [33.5270, 126.8550], color: '#4caf50', desc: '8/15 오일장 구경' },
-  { name: '🏘 동화마을', pos: [33.3290, 126.3330], color: '#4caf50', desc: '8/15 추천안2 · 성이시돌목장' },
-  { name: '🏖 코난비치', pos: [33.5530, 126.8080], color: '#4caf50', desc: '스노클링 명소 · 구좌읍 행원리' },
+{name:'🏠 한화리조트 제주',pos:[33.4490,126.6374],color:'#1a237e',desc:'숙소 · 6박 7일'},
+{name:'✈ 제주공항',pos:[33.5113,126.4930],color:'#e91e63',desc:'엄마아빠 도착/출발 · 현아네 도착'},
+{name:'🚢 제주항',pos:[33.5280,126.5200],color:'#1976d2',desc:'서율이네 배 도착/출발 (산타모니카호)'},
+{name:'🏔 한라산 성판악',pos:[33.3850,126.6192],color:'#e64a19',desc:'8/14 등반 · 홍·지원·서율·약사님'},
+{name:'🍽 손맛촌',pos:[33.4329,126.7098],color:'#e64a19',desc:'8/10 저녁 · 갈치조림'},
+{name:'🍽 명진전복',pos:[33.5325,126.8501],color:'#e64a19',desc:'8/11 저녁 · 전복돌솥밥'},
+{name:'🍽 칠돈가',pos:[33.5024,126.5108],color:'#e64a19',desc:'8/12 저녁 (제주시 → 신화월드 근처로 변경)'},
+{name:'🍽 성미가든',pos:[33.4309,126.6801],color:'#e64a19',desc:'8/13 · 8/15 저녁 · 닭샤브'},
+{name:'🍽 곱들락 함덕',pos:[33.5421,126.6645],color:'#e64a19',desc:'8/14 저녁 · 등반기념회식'},
+{name:'🍽 싱싱촘맛집',pos:[33.5348,126.6641],color:'#e64a19',desc:'8/15 추천안2 · 회국수'},
+{name:'🍗 돌담통닭',pos:[33.5184,126.8348],color:'#e64a19',desc:'8/15 야식 · 포장'},
+{name:'🍽 낭이네',pos:[33.5000,126.5200],color:'#e64a19',desc:'8/16 점심선택 · 제주시내'},
+{name:'🏖 함덕해수욕장',pos:[33.5425,126.6680],color:'#4caf50',desc:'8/15 일정'},
+{name:'🌳 비자림',pos:[33.4190,126.7870],color:'#4caf50',desc:'8/15 선택코스'},
+{name:'🌿 세화오일장',pos:[33.5270,126.8550],color:'#4caf50',desc:'8/15 오일장 구경'},
+{name:'🏘 동화마을',pos:[33.3290,126.3330],color:'#4caf50',desc:'8/15 추천안2 · 성이시돌목장'},
+{name:'🏖 코난비치',pos:[33.5530,126.8080],color:'#4caf50',desc:'스노클링 명소 · 구좌읍 행원리'},
 ];
-
-places.forEach(p => {
-  const icon = L.divIcon({
-    html: `<div style="background:${p.color};color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3)">${p.name[0]}</div>`,
-    className: '',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -18]
-  });
-  L.marker(p.pos, { icon }).addTo(map)
-    .bindPopup(`<strong>${p.name}</strong><br>${p.desc}`);
-});
+places.forEach(p=>{const icon=L.divIcon({html:`<div style="background:${p.color};color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)">${p.name[0]}</div>`,className:'',iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-16]});L.marker(p.pos,{icon}).addTo(map).bindPopup(`<strong>${p.name}</strong><br>${p.description||p.desc}`)})
 </script>
 </body>
 </html>
