@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 세인이네 제주 여행</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#f8fafc;color:#222;min-height:100vh}
+.hero{position:relative;height:300px;overflow:hidden;background:linear-gradient(135deg,#1a237e,#0d47a1)}
+.hero-bg{position:absolute;inset:0;background:url(https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=1200&q=80) center/cover;opacity:.4}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,27,77,.8),transparent 50%)}
+.hero-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 20px;text-align:center;color:#fff}
+.hero h1{font-size:30px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 12px rgba(0,0,0,.3)}
+.hero .sub{font-size:14px;opacity:.85;font-weight:300;margin-top:6px}
+.hero .badge{display:inline-block;background:rgba(255,255,255,.15);backdrop-filter:blur(6px);padding:5px 16px;border-radius:20px;font-size:12px;margin-top:10px;border:1px solid rgba(255,255,255,.1)}
+.container{max-width:700px;margin:-30px auto 0;position:relative;z-index:3;padding:0 12px}
+.info-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 24px rgba(0,0,0,.06);margin-bottom:14px}
+.info-card h3{font-size:15px;font-weight:700;color:#1a237e;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.info-item{padding:8px 10px;background:#f8fafc;border-radius:8px;font-size:13px;line-height:1.5}
+.info-item .label{font-size:10px;color:#999;font-weight:500}
+.info-item .val{font-weight:500;color:#333}
+.member-list{display:flex;flex-wrap:wrap;gap:6px}
+.member-tag{background:#e8eaf6;color:#1a237e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500}
+.member-tag .role{font-size:10px;color:#666}
+.day-card{background:#fff;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.day-header{display:flex;align-items:center;padding:14px 16px;cursor:pointer;user-select:none;gap:12px}
+.day-header .date-badge{min-width:44px;text-align:center}
+.day-header .date-badge .day-num{font-size:22px;font-weight:900;line-height:1.1;color:#1a237e}
+.day-header .date-badge .day-name{font-size:10px;color:#999;font-weight:500}
+.day-header .date-badge .day-week{font-size:10px;font-weight:700;color:#1976d2}
+.day-header .day-summary{flex:1;font-size:13px;font-weight:500;color:#555}
+.day-header .toggle-icon{color:#ccc;font-size:14px;transition:transform .25s}
+.day-card.collapsed .day-body{display:none}
+.day-card.collapsed .toggle-icon{transform:rotate(-90deg)}
+.day-body{padding:0 16px 16px}
+.event{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f3f7}
+.event:last-child{border-bottom:none}
+.event-time{min-width:56px;font-size:12px;font-weight:500;color:#999;padding-top:2px;flex-shrink:0}
+.event-desc{flex:1;font-size:13px;line-height:1.55;color:#444}
+.event-desc strong{color:#1a237e}
+.flight-info{background:#e3f2fd;border-radius:10px;padding:10px 14px;margin:6px 0;border-left:3px solid #1976d2}
+.flight-info .label{font-size:10px;font-weight:700;color:#1976d2;margin-bottom:3px}
+.footer{text-align:center;padding:24px;color:#bbb;font-size:12px;font-weight:300}
+.back-link{display:inline-block;margin-top:10px;font-size:12px;color:#1976d2;text-decoration:none}
+@media(max-width:600px){
+.hero{height:240px}
+.hero h1{font-size:24px}
+.container{margin:-20px auto 0}
+.info-grid{grid-template-columns:1fr}
+}
+</style>
+</head><body>
+<div class="hero">
+<div class="hero-bg"></div><div class="hero-overlay"></div>
+<div class="hero-content">
+<h1>🌴 2026 세인이네 제주 여행</h1>
+<div class="sub">엄마 예림 · 아빠 떡국 · 세인이 · 재겸이</div>
+<div class="badge">2026. 8. 7 (금) ~ 8. 10 (월) · 2박 3일</div>
+</div></div>
+<div class="container">
+<div class="info-card">
+<h3>👨‍👩‍👧‍👦 가족 소개</h3>
+<div class="member-list">
+<div class="member-tag">엄마 예림 <span class="role">·</span></div>
+<div class="member-tag">아빠 떡국 <span class="role">·</span></div>
+<div class="member-tag">딸 세인이 <span class="role">· 초등</span></div>
+<div class="member-tag">아들 재겸이 <span class="role">· 초등</span></div>
+</div>
+</div>
+<div class="info-card">
+<h3>✈️ 교통편</h3>
+<div class="info-grid">
+<div class="info-item"><div class="label">🛫 가는 편</div><div class="val">8/7(금) 13:15 출발</div></div>
+<div class="info-item"><div class="label">🛬 오는 편</div><div class="val">8/10(월) 20:40 출발</div></div>
+</div>
+</div>
+<div class="info-card">
+<h3>📅 여행 일정</h3>
+<div style="font-size:13px;color:#888;text-align:center;padding:20px 0">일정 정보를 입력해주세요 ✏️</div>
+</div>
+<div class="footer">
+🏝 2026 세인이네 제주 여행 · 급 제주 티켓 🎉<br>
+<a class="back-link" href="./">← 서율이네 여행 보기</a>
+</div></div>
+</body></html>
